@@ -37,7 +37,6 @@ input,select,textarea{font:inherit;color:inherit}
 body.ready .scene{opacity:1}
 .world{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d;will-change:transform}
 .pl{position:absolute;left:0;top:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
-.fog{position:absolute;inset:-1px;background:#05060a;opacity:0;pointer-events:none}
 
 /* الحيطان */
 .wall{
@@ -144,13 +143,13 @@ body.ready .scene{opacity:1}
    ========================================================= */
 .vignette{position:fixed;inset:0;pointer-events:none;z-index:2;
   background:radial-gradient(ellipse 85% 80% at 50% 50%,transparent 55%,rgba(0,0,0,.55) 100%)}
-.grain{position:fixed;inset:-50%;pointer-events:none;z-index:3;opacity:.06;
+.grain{position:fixed;inset:0;pointer-events:none;z-index:3;opacity:.06;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 .low .grain{display:none}
 
 .progress{position:fixed;top:0;right:0;left:0;height:2px;z-index:20;background:rgba(255,255,255,.05)}
-.progress span{display:block;height:100%;width:100%;transform:scaleX(0);transform-origin:right center;background:linear-gradient(to left,var(--cyan),var(--violet));box-shadow:0 0 12px var(--cyan)}
+.progress span{will-change:transform;display:block;height:100%;width:100%;transform:scaleX(0);transform-origin:right center;background:linear-gradient(to left,var(--cyan),var(--violet));box-shadow:0 0 12px var(--cyan)}
 
 .top{
   position:fixed;top:0;right:0;left:0;z-index:20;display:flex;align-items:center;justify-content:space-between;
@@ -218,6 +217,9 @@ body.ready .scene{opacity:1}
 .minimap{position:fixed;right:clamp(12px,2vw,26px);bottom:22px;z-index:12;width:120px;height:150px;padding:8px;border-radius:14px;
   background:var(--glass);border:1px solid var(--line)}
 .minimap svg{width:100%;height:100%;overflow:visible}
+.map-marker{position:absolute;left:0;top:0;width:0;height:0;will-change:transform;pointer-events:none}
+.map-marker::before{content:'';position:absolute;left:-1px;top:-12px;width:2px;height:12px;border-radius:2px;background:#fff}
+.map-marker i{position:absolute;left:-4.5px;top:-4.5px;width:9px;height:9px;border-radius:50%;background:#41e9ff;box-shadow:0 0 0 2px #07080c,0 0 10px #41e9ff}
 .minimap .pct{position:absolute;top:8px;left:10px;font-size:10.5px;color:var(--muted);direction:ltr}
 
 /* =========================================================

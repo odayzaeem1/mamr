@@ -7,8 +7,8 @@
 const CONFIG = {
   brand: 'ممرّ',
   brandSub: 'استوديو حلول برمجية',
-  whatsapp: '970592297933',          // بدون + أو أصفار بالبداية
-  email: 'tradeoday@gmail.com'
+  whatsapp: '970599000000',          // بدون + أو أصفار بالبداية
+  email: 'hello@yourstudio.com'
 };
 
 /* الخدمات — كل عنصر = لوحة على حيطان الممر */
@@ -216,11 +216,8 @@ function panel(cls, w, h, x, y, z, ry, rx){
   const el = document.createElement('div');
   el.className = 'pl ' + cls;
   placeEl(el, w, h, x, y, z, ry, rx);
-  const fog = document.createElement('div');
-  fog.className = 'fog';
-  el.appendChild(fog);
   frag.appendChild(el);
-  return { el, fog, f: -1 };
+  return { el, f: -1 };
 }
 /* جدار بين نقطتين — العنصر يواجه داخل الممر دائماً */
 function wallPanel(cls, A, B){
@@ -270,7 +267,7 @@ SERVICES.forEach((sv, i) => {
     `<div class="halo"></div><div class="lamp"></div>
      <div class="fr"><div class="mat"><div class="art">${artSVG(sv)}</div></div></div>
      <div class="plaque"><span class="no">${String(i + 1).padStart(2, '0')}</span><b></b><i>اضغط للتفاصيل</i></div>
-     <div class="fog"></div>`;
+`;
   el.querySelector('.plaque b').textContent = sv.title;
   placeEl(el, FRAME_W, FRAME_H, p.x, 0, p.z, ry);
   el.addEventListener('click', () => openService(i));
@@ -284,7 +281,7 @@ SERVICES.forEach((sv, i) => {
   const pool = panel('pool', 230, 300, pp.x, FLOOR - 1, pp.z, -pp.t, 90);
   pool.el.style.setProperty('--acc-rgb', sv.rgb);
 
-  frames.push({ s, side, el, fog: el.querySelector('.fog'), f: -1, pool, vis: true });
+  frames.push({ s, side, el, f: -1, pool, vis: true });
 });
 
 /* الجدار الأخير */
@@ -294,11 +291,9 @@ endWall.className = 'pl endwall';
 endWall.innerHTML =
   `<div class="neon">وصلت لآخر الممر..<br>وبداية مشروعك</div>
    <p>جاهزين نحوّل فكرتك لمنتج رقمي حقيقي.<br>احكيلنا شو في بالك.</p>
-   <div class="row"><button class="btn primary" type="button" data-contact>ابدأ مشروعك</button><button class="btn ghost" type="button" data-restart>ارجع للبداية</button></div>
-   <div class="fog"></div>`;
+   <div class="row"><button class="btn primary" type="button" data-contact>ابدأ مشروعك</button><button class="btn ghost" type="button" data-restart>ارجع للبداية</button></div>`;
 placeEl(endWall, HW * 2 + 4, WALL_H + 4, endP.x, WALL_Y, endP.z, -endP.t);
 frag.appendChild(endWall);
-const endFog = endWall.querySelector('.fog');
 endWall.querySelector('[data-contact]').addEventListener('click', () => openContact());
 endWall.querySelector('[data-restart]').addEventListener('click', () => scrollToS(0));
 
@@ -328,7 +323,8 @@ const dotBtns = SERVICES.map((sv, i) => {
 /* الخريطة المصغرة */
 const NS = 'http://www.w3.org/2000/svg';
 const mapSvg = document.getElementById('mapSvg');
-let mapDot, mapDir;
+const MAP = { vx: 0, vy: 0, vw: 1, vh: 1, sc: 0, ox: 0, oy: 0 };
+const mapMarker = document.getElementById('mapMarker');
 (function buildMap(){
   let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
   const pts = [];
@@ -362,19 +358,17 @@ let mapDot, mapDir;
     c.setAttribute('fill', sv.colors[0]);
     mapSvg.appendChild(c);
   });
-  mapDir = document.createElementNS(NS, 'line');
-  mapDir.setAttribute('stroke', '#fff');
-  mapDir.setAttribute('stroke-width', sw * .9);
-  mapDir.setAttribute('stroke-linecap', 'round');
-  mapSvg.appendChild(mapDir);
-  mapDot = document.createElementNS(NS, 'circle');
-  mapDot.setAttribute('r', sw * 2.2);
-  mapDot.setAttribute('fill', '#41e9ff');
-  mapDot.setAttribute('stroke', '#07080c');
-  mapDot.setAttribute('stroke-width', sw * .8);
-  mapSvg.appendChild(mapDot);
-  mapSvg.dataset.sw = sw;
+  MAP.vx = minX - pad; MAP.vy = minZ - pad; MAP.vw = w; MAP.vh = h;
 })();
+/* مؤشر موقعك على الخريطة: عنصر HTML بيتحرك بـ transform (بدون إعادة رسم الخريطة) */
+function measureMap(){
+  const box = mapSvg.getBoundingClientRect();
+  const host = mapSvg.parentElement.getBoundingClientRect();
+  const sc = Math.min(box.width / MAP.vw, box.height / MAP.vh) || 0;
+  MAP.sc = sc;
+  MAP.ox = box.left - host.left + (box.width - MAP.vw * sc) / 2;
+  MAP.oy = box.top - host.top + (box.height - MAP.vh * sc) / 2;
+}
 
 /* =========================================================
    السكرول ← الكاميرا
@@ -386,6 +380,7 @@ let persp = 600;
 function maxScroll(){ return Math.max(0, document.documentElement.scrollHeight - window.innerHeight); }
 function layout(){
   persp = clamp(Math.round(window.innerWidth * 0.42), 380, 720);
+  measureMap();
   scene.style.perspective = persp + 'px';
   track.style.height = Math.round(CAM_MAX * 1.15 + Math.max(window.innerHeight, screen.height || 0)) + 'px';
 }
@@ -414,7 +409,9 @@ function fogAt(d){
   const v = clamp((d - 350) / (FOG_END - 350), 0, 1);
   return Math.round(Math.pow(v, 1.25) * 48) / 50; // خطوات 0.02 = كتابات أقل على الـ DOM
 }
-function setFog(o, f){ if (o.f !== f){ o.fog.style.opacity = f; o.f = f; } }
+/* الضباب = شفافية القطعة نفسها فوق خلفية سوداء.
+   الشفافية بيعالجها كرت الشاشة مباشرة بدون إعادة رسم — هذا أكبر توفير بالأداء */
+function setFog(o, f){ if (o.f !== f){ o.el.style.opacity = 1 - f; o.f = f; } }
 
 const hero = document.getElementById('hero');
 const hint = document.getElementById('hint');
@@ -476,7 +473,7 @@ function render(){
     }
   }
   const ef = fogAt(S_END - s);
-  if (ef !== endFogV){ endFogV = ef; endFog.style.opacity = ef; }
+  if (ef !== endFogV){ endFogV = ef; endWall.style.opacity = 1 - ef; }
   const endVis = (S_END - s < VIEW);
   if (endVis !== endWallVis){ endWallVis = endVis; endWall.style.display = endVis ? '' : 'none'; }
 
@@ -495,13 +492,8 @@ function render(){
   const hv = Math.round(clamp(1 - s / 60, 0, 1) * 50) / 50;
   if (hv !== hintV){ hintV = hv; hint.style.opacity = hv; }
 
-  mapDot.setAttribute('cx', cx.toFixed(1));
-  mapDot.setAttribute('cy', cz.toFixed(1));
-  const L = parseFloat(mapSvg.dataset.sw) * 9;
-  mapDir.setAttribute('x1', cx.toFixed(1));
-  mapDir.setAttribute('y1', cz.toFixed(1));
-  mapDir.setAttribute('x2', (cx + Math.sin(yaw) * L).toFixed(1));
-  mapDir.setAttribute('y2', (cz - Math.cos(yaw) * L).toFixed(1));
+  mapMarker.style.transform =
+    `translate3d(${(MAP.ox + (cx - MAP.vx) * MAP.sc).toFixed(1)}px,${(MAP.oy + (cz - MAP.vy) * MAP.sc).toFixed(1)}px,0) rotate(${yaw.toFixed(3)}rad)`;
 
   /* أقرب خدمة */
   let best = -1, bestD = Infinity;
