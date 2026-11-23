@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ممرّ | استوديو حلول برمجية</title>
+<meta name="description" content="ادخل الممر واكتشف خدماتنا البرمجية: مواقع، متاجر، تطبيقات، أنظمة، ذكاء اصطناعي وأكثر.">
+<meta name="theme-color" content="#07080c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="track" aria-hidden="true"></div>
+
+<!-- المشهد ثلاثي الأبعاد -->
+<div class="scene" id="scene" aria-label="ممر الخدمات">
+  <div class="world" id="world"></div>
+</div>
+<div class="vignette" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- الواجهة -->
+<div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+<header class="top">
+  <a class="brand" href="#" id="brandLink" aria-label="العودة لبداية الممر">
+    <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
+      <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#41e9ff"/><stop offset="1" stop-color="#8c6bff"/></linearGradient></defs>
+      <rect x="1" y="1" width="38" height="38" rx="11" stroke="url(#lg)" stroke-width="2"/>
+      <path d="M11 30V12l9 9 9-9v18" stroke="url(#lg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span><b id="brandName"></b><small id="brandSub"></small></span>
+  </a>
+  <nav>
+    <button class="btn ghost" id="toServices" type="button">الخدمات</button>
+    <button class="btn primary" id="toContact" type="button">ابدأ مشروعك</button>
+  </nav>
+</header>
+
+<section class="hero" id="hero">
+  <span class="eyebrow" id="heroEyebrow"></span>
+  <h1>ادخل الممر..<br>واكتشف كيف <em>نبني منتجك الرقمي</em></h1>
+  <p>كل لوحة على الحيطان خدمة من خدماتنا. امشِ بالسكرول، وأي لوحة تشدّك اضغط عليها لتشوف التفاصيل وطريقة الشغل.</p>
+</section>
+
+<div class="hint" id="hint" aria-hidden="true"><div class="mouse"></div><span>مرّر للأسفل لتدخل الممر</span></div>
+
+<div class="near" id="near" role="status" aria-live="polite">
+  <span class="side" id="nearSide"></span>
+  <b id="nearTitle"></b>
+  <button class="btn primary" id="nearBtn" type="button">التفاصيل</button>
+</div>
+
+<nav class="dots" id="dots" aria-label="التنقل بين الخدمات"></nav>
+
+<div class="minimap" aria-hidden="true">
+  <span class="pct" id="pct">0%</span>
+  <svg id="mapSvg"></svg>
+</div>
+
+<!-- نافذة تفاصيل الخدمة -->
+<div class="modal" id="svcModal" aria-hidden="true">
+  <div class="backdrop" data-close></div>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <button class="x" type="button" data-close aria-label="إغلاق">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="m-hero">
+      <div class="m-head">
+        <span class="m-no" id="mNo"></span>
+        <h2 id="mTitle"></h2>
+        <p class="m-tag" id="mTag"></p>
+      </div>
+      <div class="m-art" id="mArt"></div>
+    </div>
+    <div class="m-body">
+      <p class="m-desc" id="mDesc"></p>
+      <div class="m-grid">
+        <section><h3>ماذا تشمل الخدمة</h3><ul class="m-list" id="mList"></ul></section>
+        <section><h3>كيف نشتغل</h3><ol class="m-steps" id="mSteps"></ol></section>
+      </div>
+      <div class="m-meta">
+        <div><h3>التقنيات والأدوات</h3><div class="chips" id="mChips"></div></div>
+        <div class="m-dur"><h3>المدة التقديرية</h3><strong id="mDur"></strong><small>تختلف حسب حجم المشروع</small></div>
+      </div>
+    </div>
+    <div class="m-foot">
+      <button class="btn ghost" type="button" id="mPrev">→ السابقة</button>
+      <button class="btn primary" type="button" id="mOrder">اطلب هذه الخدمة</button>
+      <button class="btn ghost" type="button" id="mNext">التالية ←</button>
+    </div>
+  </div>
+</div>
+
+<!-- نافذة التواصل -->
+<div class="modal" id="contactModal" aria-hidden="true">
+  <div class="backdrop" data-close></div>
+  <div class="sheet c-sheet" role="dialog" aria-modal="true" aria-labelledby="cTitle">
+    <button class="x" type="button" data-close aria-label="إغلاق">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <form class="c-wrap" id="contactForm" novalidate>
+      <h2 id="cTitle">خلّينا نبدأ مشروعك</h2>
+      <p>اكتب لنا فكرتك باختصار، وبنرجعلك بخطة واضحة وتقدير للوقت.</p>
+      <div class="two">
+        <div class="field" data-req>
+          <label for="cName">الاسم</label>
+          <input id="cName" name="name" type="text" autocomplete="name" placeholder="اسمك الكريم">
+          <span class="err">اكتب اسمك من فضلك</span>
+        </div>
+        <div class="field">
+          <label for="cPhone">رقم الجوال (اختياري)</label>
+          <input id="cPhone" name="phone" type="tel" autocomplete="tel" inputmode="tel" dir="ltr" placeholder="+970 ...">
+        </div>
+      </div>
+      <div class="field">
+        <label for="cService">الخدمة المطلوبة</label>
+        <select id="cService" name="service"></select>
+      </div>
+      <div class="field" data-req>
+        <label for="cMsg">فكرة المشروع</label>
+        <textarea id="cMsg" name="message" placeholder="مثال: بدي متجر إلكتروني لمنتجات يدوية مع دفع إلكتروني..."></textarea>
+        <span class="err">اكتب فكرة مختصرة عن مشروعك</span>
+      </div>
+      <div class="c-actions">
+        <button class="btn primary" type="submit">أرسل عبر واتساب</button>
+        <button class="btn ghost" type="button" id="cMail">أرسل بالإيميل</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="main.js" defer></script>
+</body>
+</html>
