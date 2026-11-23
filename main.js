@@ -7,8 +7,8 @@
 const CONFIG = {
   brand: 'ممرّ',
   brandSub: 'استوديو حلول برمجية',
-  whatsapp: '970599000000',          // بدون + أو أصفار بالبداية
-  email: 'hello@yourstudio.com'
+  whatsapp: '970592297933',          // بدون + أو أصفار بالبداية
+  email: 'odyzaeem1@gmail.com'
 };
 
 /* الخدمات — كل عنصر = لوحة على حيطان الممر */
